@@ -14,10 +14,10 @@ function User (props) {
         let user = getUserId();
         setUserId(user);
 
-        let url = `blogapi-production-8080.up.railway.app/posts/${userId}`;
+        let url = `https://blogapi-production-8080.up.railway.app/posts/${userId}`;
         fetch(url)
         .then((response) => {
-            return response
+            return response.json()
         })
         .then(data => {
             if (data.status === 404) {
@@ -43,22 +43,25 @@ function User (props) {
     }, []);
 
     const handleUpdate = (postid) => {
-        return redirect(`/posts/${postid}/edit`)
+        let path = `/edit/${postid}`
+        navigate(path)
     }
 
     const handleDelete = (postid) => {
-        let url = `blogapi-production-8080.up.railway.app/posts/${postid}`
+        let url = `https://blogapi-production-8080.up.railway.app/posts/${postid}`
+        let info = {author: userId}
         let fetchData = {
             method: 'DELETE',
+            body: JSON.stringify(info),
             headers: new Headers({
                 'Content-Type': 'application/json; charset=UTF-8',
-                'Authorization': `Bearer ${localStorage.getItem('jwt')}`
+                'Authorization': `Bearer ` +  JSON.parse(localStorage.getItem('jwt'))
             })
         }
 
         fetch(url, fetchData)
         .then((response) => {
-            return response
+            return response.json()
         })
         .then((data) => {
             if (data === 'deleted') {
@@ -77,25 +80,23 @@ function User (props) {
             {userId.length === 0 &&
             <div className="usererror">Only logged in users can view their posts.</div> 
             }
+            {userId.length > 0 &&
+            <div className="userwelcome">Welcome to your profile {userDetails}</div> 
+            }
             {posts.length === 0 && userId.length > 0 &&
             <div className="noposts">You have no posts</div>
             }
-            {posts.length > 0 && userId.length > 0 && 
-            <button type='button' onClick={handleCreate}></button>
+            {userId.length > 0 && 
+            <button className="createpostbtn" type='button' onClick={handleCreate}>Create Post</button>
             }
             {posts.length > 0 && userId.length > 0 &&
             <div className="postlistcont">
-                <div className="yourblogs">Your Blog Posts</div>
-                <div className="postheadline">
-                    <div className="posttitlehead">TITLE</div>
-                    <div className="poststatushead">STATUS</div>
-                    <div className="postactionhead">ACTION</div>
-                </div>
+                <div className="yourblogs">Your Blog Posts:</div>
                 <ul className="postlist">
                     {posts.map(post => (
                         <li key={post._id} className="postitem">
                             <div className="post">
-                                <Link to={`posts/${post._id}`}>
+                                <Link to={`/post/${post._id}`}>
                                 <div className="userposttitle">{post.title}</div>
                                 </Link>
                                 <div className="userpoststatus">
@@ -107,8 +108,8 @@ function User (props) {
                                     }
                                 </div>
                                 <div className="postaction">
-                                    <button className="postupdate" onClick={handleUpdate(post._id)}><img src={require('../assets/update.svg').default} alt=''></img>Update</button>
-                                    <button className="postdelete" onClick={handleDelete(post._id)}><img src={require('../assets/delete.svg').default} alt=''></img>Delete</button>
+                                    <button className="postupdate" onClick={() => handleUpdate(post._id)}><img className="postupdateimg" src={'/update.svg'} alt=''></img>Update</button>
+                                    <button className="postdelete" onClick={() => handleDelete(post._id)}><img className="postdeleteimg" src={'/delete.svg'} alt=''></img>Delete</button>
                                 </div>
                             </div>
                         </li>

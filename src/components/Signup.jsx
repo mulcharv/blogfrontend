@@ -1,51 +1,28 @@
 import { useState, useEffect } from "react";
 import { redirect, Link } from "react-router-dom";
-import {Icon} from 'react-icons-kit';
-import {eyeOff} from 'react-icons-kit/feather/eyeOff';
-import {eye} from 'react-icons-kit/feather/eye';
+import {useNavigate} from 'react-router-dom';
+import ShowHidePassword from './ShowHidePassword';
 import uniqid from 'uniqid';
 
 
 function Signup(props) {
     const userDetails = props.data;
+    const navigate = useNavigate();
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
     const [confirmPassword, setConfirmPassword] = useState('');
-    const [passwordType, setPasswordType] = useState('password');
-    const [confirmType, setConfirmType] = useState('password');
-    const [passwordIcon, setPasswordIcon] = useState(eyeOff);
-    const [confirmIcon, setConfirmIcon] = useState(eyeOff);
     const [errors, setErrors] = useState('');
 
-    const handleToggle = (version, type) => {
-        if (version==='password') {
-            if (type==="password") {
-            setPasswordIcon(eye);
-            setPasswordType('text')
-        } else {
-            setPasswordIcon(eyeOff);
-            setPasswordType('password')
-        }
-        } else {
-            if (type==='password') {
-            setConfirmIcon(eye);
-            setConfirmType('text')
-        } else {
-            setConfirmIcon(eyeOff);
-            setConfirmType('password')
-        }
-        }
-    }
 
     const handleSubmit = (event) => {
         event.preventDefault();
         setErrors([]);
-        const url = 'blogapi-production-8080.up.railway.app/signup';
+        const url = 'https://blogapi-production-8080.up.railway.app/signup';
         let data = {
             username: username,
             password: password,
-            confirmPassword: confirmPassword
+            passwordConfirmation: confirmPassword
         }
 
         let fetchData = {
@@ -58,15 +35,15 @@ function Signup(props) {
 
         fetch(url, fetchData)
         .then((response) => {
-            return response;
+            return response.json();
         })
-        .then(data => {
-            if (data.errors.length > 0) {
+        .then((data) => {
+            if (data.errors) {
             let errors = data.errors;
             setErrors(errors);
             return;
             } else {
-                return redirect("/login");
+                navigate("/login");
             }
         }).catch((error) => alert(error))
     }
@@ -80,21 +57,14 @@ function Signup(props) {
                 <div className="signupformcont">
                     <div className="signuptitle">SIGNUP</div>
                     <form className="signupform">
-                        <label className="usernamelabel"> Username:
+                        <div className="usernamelabel"> Username: </div>
                             <input type="text" name="username" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="username"></input>
-                        </label>
-                        <label className="passwordlabel"> Password:
-                            <input type={passwordType} name="password" value={password} onChange={(e)=> setPassword(e.target.value)} placeholder="*******"></input>
-                            <button className="passwordtoggle" onClick={() => handleToggle('password', passwordType)}>
-                                <Icon className="toggleicon" icon={passwordIcon}></Icon>
-                            </button>
-                        </label>
-                        <label className="confirmlabel">Confirm Password:
-                            <input type={confirmType} name="passwordConfirmation" value={confirmPassword} onChange={(e)=> setConfirmPassword(e.target.value)} placeholder="*******"></input>
-                            <button className="confirmtoggle" onClick={() => handleToggle('confirm', confirmType)}>
-                                <Icon className="toggleicon" icon={confirmIcon}></Icon>
-                            </button>
-                        </label>
+                        <div className="passwordcont"> Password:
+                            <ShowHidePassword name='password' value={password} onChange={(e)=> setPassword(e.target.value)} placeholder="*******"/>
+                        </div>
+                        <div className="confirmpasswordcont">Confirm Password: 
+                            <ShowHidePassword name='password' value={confirmPassword} onChange={(e)=> setConfirmPassword(e.target.value)} placeholder="*******"/>
+                        </div>
                         <button type="submit" className="signupbtn" onClick={handleSubmit}>SIGNUP</button>
                     </form>
                     {errors.length > 0 &&

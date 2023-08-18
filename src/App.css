@@ -1,8 +1,28 @@
 #root {
-  max-width: 1280px;
-  margin: 0 auto;
-  padding: 2rem;
   text-align: center;
+  width: 100%;
+  height: 100%;
+  background-color: #F3F8F2;
+}
+
+html, body {
+  margin: 0;
+}
+
+body {
+  display: flex;
+  flex-direction: column;
+}
+
+
+@font-face {
+  font-family: TitleFont;
+  src: url(Monoton-Regular.ttf)
+}
+
+@font-face {
+  font-family: MainFont;
+  src: url(Enriqueta-Regular.ttf)
 }
 
 .logo {
@@ -39,4 +59,445 @@
 
 .read-the-docs {
   color: #888;
+}
+
+.postupdateimg, .postdeleteimg {
+  width: 1vw;
+  height: 1vw;
+}
+
+ul {
+  list-style-type: none;
+}
+
+.homecont {
+  font-family: MainFont;
+  margin-top: 2vw;
+}
+
+.infoimg {
+  width: 28vw;
+  height: 18vw;
+}
+
+.infocont {
+  display: grid;
+}
+
+.recordimg {
+  width: 3vw;
+  height: 3vw;
+}
+
+.sitenav {
+  display: grid;
+  grid-auto-flow: column;
+  background-color: #f5a92b;
+  padding: 1vw;
+}
+
+.titlecont {
+  width: max-content;
+}
+
+.titleinfo {
+  display: grid;
+  grid-auto-flow: column;
+  justify-content: start;
+  align-items: center;
+}
+
+.titletext {
+  font-size: 5vh;
+  font-family: TitleFont;
+}
+
+.sitelinks {
+  display: grid;
+  grid-auto-flow: column;
+  justify-content: end;
+  column-gap: 3vw;
+  align-items: center;
+}
+
+.postscont {
+  display: grid;
+  justify-content: center;
+}
+
+.postslist {
+  display: grid;
+  padding: 0;
+  justify-content: center;
+  grid-template-columns: auto auto auto;
+  column-gap: 1vw;
+  row-gap: 3vw;
+  margin: 0;
+}
+
+.postcardcont {
+  width: 10vw;
+  background-color: #3581B8;
+  padding: 1vw;
+  height: 10vw;
+  border: #EBE9E9 0.8vw solid;
+}
+
+.postcardcont:hover {
+  background-color: #90C2E7;
+  cursor: pointer;
+}
+
+.postcardtitle, .postcardauthor {
+  overflow-wrap: break-word;
+  text-overflow: ellipsis;
+  max-width: 50ch;
+}
+
+.postcarddate {
+  font-size: 1.6vh;
+  color: #FFF
+
+}
+
+.postcardauthor {
+  font-size: 1.8vh;
+  color: #FFF
+}
+
+.postcardtitle {
+  font-size: 2vh;
+  color: #FCB07E;
+}
+
+.viewposts {
+  font-size: 1.3vw;
+  margin-bottom: 0.5vw;
+}
+
+.logoutbtn, .loginbtn, .signupbtn {
+  background-color: #F3F8F2;
+  padding: 0.4vw;
+}
+
+.subtitle {
+  font-size: 1.5vw;
+}
+
+.infodesc {
+  font-size: 1.2vw;
+}
+
+.infobtn, .createpostbtn {
+  background-color: #111D4A;
+  padding: 0.5vw;
+  color: #EBE9E9;
+  margin: 0.5vw;
+}
+
+.infobtn:hover, .createpostbtn:hover {
+  background-color: #90C2E7;
+  color: #f5a92b
+}
+
+.userlink:hover {
+color: #3581B8;
+transform: scale(1.1);
+}
+
+.userpage {
+  margin-top: 1vw;
+  font-family: MainFont;
+}
+
+.usererror, .userwelcome {
+  font-size: 1.3vw;
+}
+
+.postitem {
+  margin: 1vw;
+}
+
+.postlist {
+  display: grid;
+  padding: 0;
+  justify-content: center;
+}
+
+.yourblogs {
+  font-size: 1.3vw;
+}
+
+.userposttitle {
+  color: #f5a92b;
+  font-size: 1.2vw;
+  max-width: 20vw;
+}
+
+.postdelete, .commentdelete {
+  background-color: #A31621;
+  padding: 0.5vw;
+  width: max-content;
+  color: #EBE9E9;
+}
+
+.postupdate, .commentupdate {
+  background-color: #104F55;
+  padding: 0.5vw;
+  width: max-content;
+  color: #EBE9E9;
+
+}
+
+.postaction {
+  display: grid;
+  grid-auto-flow: column;
+  column-gap: 1vw;
+  justify-content: center;
+}
+
+.postpage {
+  font-family: MainFont;
+  display: grid;
+  justify-content: center;
+}
+
+.postcont {
+  border: #111D4A 0.7vh solid;
+  border-radius: 0.6vw;
+  padding: 1vw;
+  margin: 1vw;
+  width: 60vw;
+  height: 15vw;
+  overflow: scroll;
+}
+
+.posttitle {
+  font-size: 1.3vw;
+  color: #A31621;
+}
+
+.postcontent {
+  margin-top: 1vw;
+}
+
+.postsubtitle {
+  color: #4E8098;
+}
+
+.commentform {
+  display: grid;
+  justify-content: center;
+}
+
+.commentbtn {
+  width: max-content;
+  margin-left: 18vw;
+  background-color: #3581B8;
+  color: #EBE9E9;
+  padding: 0.5vw;
+  margin-top: 0.3vw;
+}
+
+.commentbtn:hover {
+  background-color: #f5a92b;
+  transform: scale(1.1);
+}
+
+.commentslist {
+  display: grid;
+  row-gap: 1vw;
+  overflow: scroll;
+  margin-right: 2vw;
+  
+}
+
+.commentbox {
+  width: 40vw;
+  overflow: scroll;
+  resize: none;
+}
+
+.createpage {
+  flex: 1;
+  height: 90vh;
+  margin-top: 2vw;
+  font-family: MainFont;
+}
+
+.createblock {
+  margin-top: 1vw;
+  display: grid;
+  row-gap: 1vw;
+  justify-content: center;
+}
+
+.createcontent, .postbox {
+width: 30vw;
+height: 20vw;
+resize: none;
+overflow: scroll;
+}
+
+.createtitle {
+  width: 20vw;
+  margin-left: 5vw;
+  height: 2vw;
+}
+
+.createbtn {
+  width: 10vw;
+  margin-left: 10vw;
+  background-color: #111D4A;
+  color: #EBE9E9;
+}
+
+.createbtn:hover {
+  background-color: #3581B8;
+}
+
+.createheader {
+  font-size: 1.5vw;
+  text-decoration: underline;
+  color: #104F55;
+}
+
+.createtitlelab, .createcontentlab {
+  color: #A31621;
+}
+
+.postpage {
+  flex: 1;
+  height: 90vh;
+}
+
+.commentbtns {
+  display: grid;
+  grid-auto-flow: column;
+  justify-content: center;
+  column-gap: 0.5vw;
+}
+
+.commentuser {
+  color: #3581B8
+}
+
+.editpage {
+  flex: 1;
+  height: 90vh;
+}
+
+.posteditcont {
+  margin-top: 2vw;;
+  display: grid;
+  justify-content: center;
+  row-gap: 1vw;
+  font-family: MainFont;
+}
+
+.editheader {
+  font-size: 1.5vw;
+  text-decoration: underline;
+  color: #104F55;
+}
+
+.updatebtn {
+  background-color: #111D4A;
+  color:#EBE9E9; 
+  width: max-content;
+  margin-left: 10.5vw;
+}
+
+.updatebtn:hover {
+  background-color: #3581B8;
+}
+
+.commentformcont {
+  margin-top: 2vw;
+  flex: 1;
+  height: 90vh;
+}
+
+.commentform {
+  display: grid;
+  row-gap: 1.5vw;
+}
+
+.commentboxlabel {
+  font-size: 1.5vw;
+  color: #104F55;
+  text-decoration: underline;
+}
+
+.commentbtn {
+  background-color: #111D4A;
+  color:#EBE9E9;
+}
+
+.logincont {
+  flex: 1;
+  height: 90vh;
+  margin-top: 2vw;
+  font-family: MainFont;
+}
+
+.loginformcont {
+  display: grid;
+  row-gap: 1.5vw;
+}
+
+.logintitle {
+  font-size: 1.5vw;
+  color: #104F55
+}
+
+.passwordcont {
+  margin-top: 1.5vw;
+}
+
+.usernamelabel, .passwordcont {
+  color: #111D4A
+}
+
+.loginbtn {
+  background-color: #111D4A;
+  color: #EBE9E9
+}
+
+.loginbtn:hover {
+  background-color: #3581B8;
+}
+
+.loginfooterlink {
+  color:#A31621
+}
+
+.signupcont {
+  flex: 1;
+  height: 90vh;
+  font-family: MainFont;
+  margin-top: 2vw;
+}
+
+.signuptitle {
+  margin-bottom: 1.5vw;
+  font-size: 1.5vw;
+  color:#A31621
+}
+
+.usernamelabel {
+  margin-bottom: 0.5vw;
+}
+
+.signupbtn {
+  background-color: #104F55;
+  color: #EBE9E9;
+}
+
+.signupbtn:hover {
+  background-color: #3581B8;
+}
+
+.usernamelabel, .passwordcont, .confirmpasswordcont {
+  color: #111D4A
 }

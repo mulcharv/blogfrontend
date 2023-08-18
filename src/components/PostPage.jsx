@@ -3,13 +3,12 @@ import { useParams, Link, useNavigate, Outlet } from "react-router-dom";
 
 
 function PostPage (props) {
-    const userDetails = props.data;
 
-    const [post, setPost] = useState([]);
+    const [post, setPost] = useState(false);
     const [postError, setPostError] = useState([]);
     const [content, setContent] = useState('');
     const [userId, setUserId] = useState('');
-    const [commentError, setCommentError] = useState([]);
+    const [commentError, setCommentError] = useState(false);
     const [comments, setComments] = useState([]);
 
 
@@ -17,22 +16,21 @@ function PostPage (props) {
     let postId = params.postid;
     let navigate = useNavigate();
     const getUser = props.onComment;
+    const storepost = props.onCommUpd;
 
-    const url = `blogapi-production-8080.up.railway.app/posts/${postId}`;
+    const url = `https://blogapi-production-8080.up.railway.app/posts/${postId}`;
 
     const postGet = () => { 
-        setPostError([]);
         fetch(url)
         .then((response) => {
-            return response
+            return response.json()
         })
         .then(data => {
-            if (data.status === 404) {
-               return setPostError(data.message)
-            } else {
-                return setPost(data);
+            console.log(data)
+               setPost(data);
+               console.log(post)
             }
-        })
+        )
         .catch((error) => {
             alert(error)
         })
@@ -44,13 +42,14 @@ function PostPage (props) {
     };
 
     const commentsGet = () => {
-        const url = `blogapi-production-8080.up.railway.app/posts/${postId}/comments`;
+        const url = `https://blogapi-production-8080.up.railway.app/posts/${postId}/comments`;
         fetch(url)
         .then((response) => {
-            return response
+            return response.json()
         })
         .then(data => {
-            if (data.length > 0) {
+            if (data !== null) {
+                console.log(data);
                 return setComments(data);
             }
         })
@@ -63,37 +62,39 @@ function PostPage (props) {
         postGet();
         userIdGet();
         commentsGet();
-    }, [])
+    }, []);
+    
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        setCommentError([]);
-        const url = `blogapi-production-8080.up.railway.app/posts/${postId}/comments`;
+        setCommentError(false);
+        const url = `https://blogapi-production-8080.up.railway.app/posts/${postId}/comments`;
         let data = {
             name: userId,
             content: content,
             post: post
         }
-
+        const headers = new Headers();
+        headers.append('Content-Type', 'application/json')
+        headers.append('Authorization', `Bearer ` + JSON.parse(localStorage.getItem('jwt')))
         let fetchData = {
             method: 'POST',
             body: JSON.stringify(data),
-            headers: new Headers({
-                'Content-Type': 'application/json; charset=UTF-8',
-                'Authorization': `Bearer ${localStorage.getItem('jwt')}`
-            })
+            headers: headers
         }
 
         fetch(url, fetchData)
         .then((response) => {
-            return response
+            return response.json()
         })
         .then((data) => {
-            if (data.errors.length > 0) {
+            if (data.errors) {
                 setCommentError(data.errors);
             } else {
+                console.log(data)
                 let commentsCopy = [...comments];
                 commentsCopy.push(data);
+                setContent('');
                 setComments(commentsCopy);
             }
             return;
@@ -104,23 +105,25 @@ function PostPage (props) {
     }
 
     const handleCommentUp = (commentid) => {
-        let path = `/posts/${postId}/${commentid}`
+        storepost(postId);
+        let path = `/comment/${commentid}`
         navigate(path)
     }
 
     const handleCommentDel = (commentid) => {
-        let url = `blogapi-production-8080.up.railway.app/posts/${postId}/comments/${commentid}`;
+        let url = `https://blogapi-production-8080.up.railway.app/posts/${postId}/comments/${commentid}`;
+
+        const headers = new Headers();
+        headers.append('Content-Type', 'application/json')
+        headers.append('Authorization', `Bearer ` + JSON.parse(localStorage.getItem('jwt')))
 
         let fetchData = {
             method: 'DELETE',
-            headers: new Headers({
-                'Content-Type': 'application/json; charset=UTF-8',
-                'Authorization': `Bearer ${localStorage.getItem('jwt')}`
-            })
+            headers: headers
         }
         fetch(url, fetchData)
         .then((response) => {
-            return response
+            return response.json()
         })
         .then((data) => {
             if (data.status === 401) {
@@ -141,41 +144,37 @@ function PostPage (props) {
         navigate(path)
     }
 
-    return (
+    return(
         <div className="postpage">
-            {post.length === 0 && 
-            <div className="postmiss">{postError}</div>
+            {!post && 
+            <div className="postmiss">Post not found</div>
             }
-            {post.length > 0 && 
+            {post && 
             <div className="postcont">
                 <div className="posttitle">{post.title}</div>
-                <div className="postsubtitle">{post.timestamp_formatted} | Posted by {post.author}</div>
-                <div className="postimgcont">
-                    <img className="postimg" src={('data:image/jpeg;base64,' + Buffer.from(post.cover_image).toString('base64'))} alt=''></img>
-                </div>
+                <div className="postsubtitle">{post.timestamp_formatted} | Posted by {post.author.username}</div>
                 <div className="postcontent">{post.content}</div>
             </div>
             }
-            {post.length > 0 && userDetails.length === 0 &&
+            {post && userId.length === 0 &&
             <button className="postlogbtn" type="button" onClick={handleLogin}> Please login to comment.</button>
             }
-            {post.length > 0 && userDetails.length > 0 && 
+            {post && userId.length > 0 && 
             <div className="postcommentcont">
                 <form className="commentform">
-                    <label className="commentboxlabel">
-                        <textarea name="content" className="commentbox" placeholder="Type your comment here" value={content} onChange={(e) => setContent(e.target.value)}></textarea>
-                    </label>
-                    <button type="button" className="commentbtn" onClick={handleSubmit}></button>
+                    <div className="commentprompt">Submit Comment:</div>
+                    <textarea name="content" className="commentbox" placeholder="Type your comment here" value={content} onChange={(e) => setContent(e.target.value)}></textarea>
+                    <button type="button" className="commentbtn" onClick={handleSubmit}>Submit</button>
                 </form>
-                {commentError.length > 0 &&
-                <div className="commenterror">{commentError[0]}</div>
+                {commentError &&
+                <div className="commenterror">{commentError}</div>
                 }
             </div> 
             }
             {comments.length === 0 &&
             <div className="nocomments">No comments on this post yet.</div> 
             }
-            {comments.length === 0 && userDetails.length > 0 &&
+            {comments.length === 0 && userId.length > 0 &&
             <div className="commentprompt">Be the first to comment!</div> 
             }
             {comments.length > 0 &&
@@ -193,8 +192,8 @@ function PostPage (props) {
                             <div className="commentcontent">{comment.content}</div>
                             {userId === comment.name._id &&
                             <div className='commentbtns'>
-                                <button className="commentupdate" onClick={handleCommentUp(comment._id)}>Update</button>
-                                <button className="commentdelete" onClick={handleCommentDel(comment._id)}>Delete</button> 
+                                <button className="commentupdate" onClick={() => handleCommentUp(comment._id)}>Update</button>
+                                <button className="commentdelete" onClick={() => handleCommentDel(comment._id)}>Delete</button> 
                             </div>
                             }
                         </div>

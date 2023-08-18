@@ -1,49 +1,59 @@
 import { useState, useRef, useEffect } from 'react';
-import { redirect, useParams } from 'react-router-dom';
+import { redirect, useParams, useNavigate } from 'react-router-dom';
 
 function CommentEdit(props) {
 
     const [content, setContent] = useState('');
-    const [error, setError] = useState('')
+    const [error, setError] = useState(false)
 
     let params = useParams();
-    let postId = params.postid;
+    let postId = props.data;
+    let checkuser = props.onLoad;
     let commentId = params.commentid;
+    let navigate = useNavigate();
+
 
     const commentGet = () => {
-        const url = `blogapi-production-8080.up.railway.app/posts/${postId}/comments/${commentId}`
+        const url = `https://blogapi-production-8080.up.railway.app/posts/${postId}/comments/${commentId}`
         fetch(url)
         .then((response) => {
-            return response
+            return response.json()
         })
         .then(data => {
-            if (data.length > 0) {
                 return setContent(data.content)
-            }
+        })
+        .catch((error) => {
+            alert(error)
         })
     }
 
     const handleUpdate = () => {
-        setError('');
-        const url = `blogapi-production-8080.up.railway.app/posts/${postId}/comments/${commentId}`;
+        setError(false);
+        const url = `https://blogapi-production-8080.up.railway.app/posts/${postId}/comments/${commentId}`;
+        const data = {
+            content: content,
+            userid: checkuser()
+                    }
+        console.log(data)
         const fetchData = {
             method: 'PUT',
-            body: JSON.stringify(content),
+            body: JSON.stringify(data),
             headers: new Headers({
                 'Content-Type': 'application/json; charset=UTF-8',
-                'Authorization': `Bearer ${localStorage.getItem('jwt')}`
+                'Authorization': `Bearer ` +  JSON.parse(localStorage.getItem('jwt'))
             })
         }
 
         fetch(url, fetchData)
         .then((response) => {
-            return response
+            return response.json();
         })
         .then((data) => {
-            if (data.errors.length > 0) {
+            if (data.errors) {
                 setError(data.errors);
             } else {
-                return redirect(`/posts/${postId}`)
+                let path = `/post/${postId}`
+                navigate(path)
             }
         })
     }
@@ -51,17 +61,18 @@ function CommentEdit(props) {
 
     useEffect(() => {
         commentGet();
-    })
+    }, [])
 
     return(
-        <div className="postcommentcont">
+        <div className="commentformcont">
                 <form className="commentform">
-                    <label className="commentboxlabel">
+                    <div className="commentboxlabel">Edit Comment: </div>
                         <textarea name="content" className="commentbox"  value={content} onChange={(e) => setContent(e.target.value)}></textarea>
-                    </label>
-                    <button type="button" className="commentbtn" onClick={handleUpdate}></button>
+                    <button type="button" className="commentbtn" onClick={handleUpdate}>Submit</button>
                 </form>
+                {error &&
                 <div className="commenterror">{error[0]}</div>
+                }
             </div> 
     )
 }

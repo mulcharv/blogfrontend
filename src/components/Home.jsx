@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import Postcard from './Postcard';
 import { Link } from 'react-router-dom';
+import uniqid from 'uniqid';
+
 
 function Home(props) {
     const userDetails = props.data;
@@ -16,11 +18,13 @@ function Home(props) {
                 console.log(data)
                 let filteredData = [];
                 for (const entry of data) {
+                    console.log(entry)
                     if (entry.published) {
-                        filteredData.push(entry)
+                        filteredData.push([entry])
                     }
                 }
                 setPosts(filteredData)
+                return console.log(posts)
             })
             .catch((error) => {
                 alert(error)
@@ -52,12 +56,13 @@ function Home(props) {
         <div className="infoimgcont">
             <img src={'/O2-Academy-Brixton-1536x1024.jpeg'} alt='' className='infoimg'></img>
         </div>
+        <div className="viewposts">View Posts:</div>
         </div>
         <div className="postscont">
             {posts.length > 0 && (
                 <ul className="postslist">
                     {posts.map(post => (
-                        <li key={post._id} className='homepost'>
+                        <li key={uniqid()} className='homepost'>
                             <Postcard value={post}/>
                         </li>
                     ))}

@@ -1,33 +1,21 @@
 import { useState, useEffect } from "react";
 import { redirect, Link } from "react-router-dom";
-import {Icon} from 'react-icons-kit';
-import {eyeOff} from 'react-icons-kit/feather/eyeOff';
-import {eye} from 'react-icons-kit/feather/eye';
+import {useNavigate} from 'react-router-dom';
+import ShowHidePassword from "./ShowHidePassword";
 
 
 function Login(props) {
     const userDetails = props.data;
+    const navigate = useNavigate();
 
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
-    const [type, setType] = useState('password');
-    const [icon, setIcon] = useState(eyeOff);
-    const [error, setError] = useState(false);
-
-    const handleToggle = () => {
-        if (type==='password') {
-            setIcon(eye);
-            setType('text')
-        } else {
-            setIcon(eyeOff);
-            setType('password')
-        }
-    }
+    const [loginError, setLoginError] = useState([]);
 
     const handleSubmit = (event) => {
         event.preventDefault();
-        setError([]);
-        const url = 'blogapi-production-8080.up.railway.app/login';
+        setLoginError([]);
+        const url = 'https://blogapi-production-8080.up.railway.app/login';
         let data = {
             username: username,
             password: password,
@@ -37,21 +25,30 @@ function Login(props) {
             method: 'POST',
             body: JSON.stringify(data),
             headers: new Headers({
-                'Content-Type': 'application/json; charset=UTF-8'
+                'Content-Type': 'application/json; charset=UTF-8',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Methods': 'OPTIONS, POST, GET'
             })
         }
 
         fetch(url, fetchData)
         .then((response) => {
-            return response
+            return response.json()
         })
-        .then(() => {
-            props.onLogIn(username, password);
-            return redirect("/home");
+        .then((data) => {
+            if (data.status === 404) {
+                let errarr = [];
+                errarr.push(data.message);
+                return setLoginError(errarr);
+            } else {
+                localStorage.setItem("jwt", JSON.stringify(data.token));
+                props.onLogIn(username);
+                navigate("/")
+            }
         }
         )
         .catch((error) => {
-            setError(true)
+            alert(error)
         })
     }
 
@@ -64,19 +61,14 @@ function Login(props) {
                 <div className="loginformcont">
                     <div className="logintitle">LOGIN</div>
                     <form className="loginform">
-                        <label className="usernamelabel"> Username:
+                        <div className="usernamelabel"> Username: </div>
                             <input type="text" value={username} onChange={(e) => setUsername(e.target.value)} placeholder="username"></input>
-                        </label>
-                        <label className="passwordlabel"> Password:
-                            <input type={type} value={password} onChange={(e) => setPassword(e.target.value)} placeholder="*******"></input>
-                            <button className="passwordtoggle" onClick={handleToggle}>
-                                <Icon className='toggleicon' icon={icon}></Icon>
-                            </button>
-                        </label>
-                        <button type='submit' className="loginbtn" onClick={handleSubmit}>LOGIN</button>
+                        <div className="passwordcont"> Password: </div>
+                            <ShowHidePassword name='password' value={password} onChange={(e)=> setPassword(e.target.value)} placeholder="*******"/>
+                        <button type='submit' className="loginbtn" onClick={handleSubmit}>Login</button>
                     </form>
-                    {error &&
-                    <div className="errorcont">User not found.</div>
+                    {loginError.length > 0 &&
+                    <div className="errorcont">{loginError[0]}</div>
                     }
                     <div className="loginfooter">
                         <div className="loginfootertext">Don't have an account?</div>

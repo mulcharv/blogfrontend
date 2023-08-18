@@ -1,47 +1,37 @@
 import { useState, useRef, useEffect } from 'react';
 import { useParams, Link, useNavigate } from "react-router-dom";
 import { redirect } from 'react-router-dom';
-import { Editor } from '@tinymce/tinymce-react';
-import { Editor as TinyMCEEditor } from 'tinymce';
 import uniqid from 'uniqid';
 
 function PostEdit(props) {
 
-    const getUser = props.onLoad();
+    const getUser = props.onLoad;
 
-    const editorRef = useRef(null);
-    const [post, setPost] = useState([]);
-    const [findError, setFindError] = useState([]);
+    const [findError, setFindError] = useState(false);
     const [title, setTitle] = useState('');
+    const [content, setContent] = useState('');
     const [published, setPublished] = useState(false);
-    const [errors, setErrors] = useState([]);
+    const [errors, setErrors] = useState(false);
     const [userId, setUserId] = useState('');
-    const [selectedFile, setSelectedFile] = useState([]);
     let params = useParams();
     let postId = params.postid;
+    let navigate = useNavigate();
 
-    let url = `blogapi-production-8080.up.railway.app/posts/${postId}`;
-
-    const handleCheck = () => {
-        if (published === false) {
-            setPublished(true)
-        }
-        if (published === true) {
-            setPublished(false)
-        }
-        return;
-    }
+    let url = `https://blogapi-production-8080.up.railway.app/posts/${postId}`;
 
     const postGet = () => {
         fetch(url)
         .then((response) => {
-            return response
+            return response.json()
         })
         .then(data => {
-            if (data.status === 404) {
+            if (data.status === 401) {
                 return setFindError(data.message)
             } else {
-                return setPost(data);
+                setTitle(data.title);
+                setContent(data.content);
+                setPublished(data.published);
+                return;
             }
         })
         .catch((error) => {
@@ -54,46 +44,36 @@ function PostEdit(props) {
         return setUserId(userId);
     };
 
-    const handleImage = (imgfile) => {
-        let reader = new FileReader();
-        reader.readAsBinaryString(imgfile);
-
-        reader.onload = () => {
-                setSelectedFile({
-                queryImage: reader.result
-            })
-        }
-    };
-
     const handleUpdate = () => {
         setErrors([]);
-        const url = 'blogapi-production-8080.up.railway.app/posts'
+        const url = `https://blogapi-production-8080.up.railway.app/posts/${postId}`
         let data = {
             title: title,
-            content: TinyMCEEditor.activeEditor.getContent(),
+            content: content,
             author: userId,
-            cover_image: selectedFile,
             published: published,
         }
+
 
         let fetchData = {
             method: 'PUT',
             body: JSON.stringify(data),
             headers: new Headers({
                 'Content-Type': 'application/json; charset=UTF-8',
-                'Authorization': `Bearer ${localStorage.getItem('jwt')}`
+                'Authorization': `Bearer ` +  JSON.parse(localStorage.getItem('jwt'))
             })
         }
 
         fetch(url, fetchData)
         .then((response) => {
-            return response;
+            return response.json();
         })
         .then((data) => {
-            if (data.errors.length > 0) {
+            if (data.errors) {
                 setErrors(data.errors);
             } else {
-                return redirect('/user')
+                let path ='/user'
+                navigate(path);
             }
         })
     }
@@ -105,39 +85,21 @@ function PostEdit(props) {
 
     return(
         <div className='editpage'>
-            {post.Error.length > 0 && 
+            {findError && 
             <div className='postmiss'>{findError}</div>
             }
-            {post.length > 0 &&
+            {content &&
             <div className='posteditcont'>
-                <label className='createtitlelab'>Title:
-                    <input type="text" className='createtitle' name="username" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title of post"></input>
-                </label>
-                <label className='createcoverlab'>Cover Image:
-                    <input className='createcoverimg' type="file" accept='image/png, image/jpeg, image/jpg' onInput={(e) => handleImage(e.target.files[0])}></input>
-                </label>
-                <Editor
-                apiKey='upi36k57pc1yky084fkd0nb9ivkuuu1qnq08phkcm5xrhmn5'
-                onInit={(evt, editor) => editorRef.current = editor}
-                initialValue="Your content here"
-                init={{
-                height: '40vh',
-                menubar: false,
-                plugins: [
-                'advlist', 'autolink', 'lists', 'link', 'image', 'charmap', 'preview', 'anchor', 
-                'searchreplace', 'visualblocks', 'code', 'fullscreen', 'insertdatetime', 'media', 'table', 'code', 'help', 'wordcount'],
-                toolbar: 'undo redo | blocks | ' + 
-                'bold italic forecolor | alignleft aligncenter ' + 
-                'alignright alignjustify | bullist numlist outdent indent | ' + 
-                'removeformat | help', 
-                content_style: 'body { font-family:Helvetica,Arial,sans-serif; font-size:14px }'
-                }}
-                />
+                <div className='editheader'>Edit Post: </div>
+                <div className='createtitlelab'> Title: </div>
+                <input type="text" className='createtitle' name="username" value={title} onChange={(e) => setTitle(e.target.value)} placeholder="Title of post"></input>
+                <div className="createcontentlab"> Content: </div>
+                <textarea name="content" className="postbox"  value={content} onChange={(e) => setContent(e.target.value)}></textarea>
                 <label className='createpublishlab'>Publish Post:
-                    <input type='checkbox' className='createpublish' onClick={handleCheck}></input>
+                    <input type='checkbox' checked={published} className='createpublish' onChange={(e) => setPublished(e.target.checked)}></input>
                 </label>
                 <button type='button' className='updatebtn' onClick={handleUpdate}>Submit Blog</button>
-                {errors.length > 0 &&
+                {errors &&
                     <ul className="errorslist">
                         {errors.map(error => (
                             <li key={uniqid()} className="postcreateerr">

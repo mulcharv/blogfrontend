@@ -1,39 +1,63 @@
 import React from "react";
 import { Link } from 'react-router-dom';
+import jwt_decode from "jwt-decode";
+import {useState, useEffect } from 'react';
 
 function Navbar(props) {
-    const userDetails = props.data;
+    const [userInfo, setUserInfo] = useState(localStorage.getItem('jwt') || false);
+    const onLo = props.onLogOut;
 
+
+    const handleLogOut = () => {
+        onLo();
+        setUserInfo(false);
+    }
+
+    const jwtGet = () => {
+        let jwt = localStorage.getItem('jwt');
+        if (jwt) {
+            setUserInfo(jwt)
+        }
+        else {
+            setUserInfo(false)
+        }
+    }
 
     const navStyle = {
-        color: '#FFF8F0'
+        color: '#000000'
     };
+
+    useEffect(() => {
+        jwtGet();
+    })
 
     return (
         <nav className="sitenav">
             <div className="titlecont">
                 <Link style={navStyle} to= '/'>
+                    <div className="titleinfo">
+                    <img src={'record.svg'} alt='' className="recordimg"/>
                     <div className="titletext">The Big Record</div>
-                    <img src={('../assets/record.svg').default} alt='' style={{position: 'absolute'}} className="cartimg"/>
+                    </div>
                 </Link> 
             </div>
             <div className="sitelinks">
-                {userDetails.length > 0 &&
-                <Link style={navStyle} to= '/userposts'>
-                    <div className="userlink">{userDetails.username}</div>
+                {userInfo &&
+                <Link style={navStyle} to= '/user'>
+                    <div className="userlink">Profile</div>
                 </Link> 
                 }
-                {userDetails.length > 0 && 
+                {userInfo && 
                 <Link style={navStyle} to='/login'>
-                    <button className='logoutbtn' type="button" onClick={props.onLogOut()}>Logout</button>
+                    <button className='logoutbtn' type="button" onClick={handleLogOut}>Logout</button>
                 </Link> 
                 }
-                {userDetails.length === 0 &&
+                {!userInfo &&
                 <Link style={navStyle} to='/login'>
                     <button className='loginbtn' type="button">Login</button>
                 </Link>
                 }
-                {userDetails.length === 0 && 
+                {!userInfo && 
                 <Link style={navStyle} to='/signup'>
                     <button className='signupbtn' type="button">Signup</button>
                 </Link>

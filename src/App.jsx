@@ -18,18 +18,28 @@ import CommentEdit from './components/CommentEdit';
 function App() {
 
   const [userDetails, setUserDetails] = useState([]);
+  const [postId, setPostId] = useState('');
 
   function CheckUserId () {
-    if (localStorage.getItem('jwt') !== undefined) {
-      let jwt = localStorage.getItem('jwt');
-      let jwtdecoded = jwt_decode(jwt);
-      let userid = jwtdecoded._id;
+    let jtoken = localStorage.getItem('jwt')
+    if (jtoken) {
+      let jwtdecoded = jwt_decode(jtoken);
+      console.log(jwtdecoded);
+      let userid = jwtdecoded.user._id;
       return userid;
+    } else {
+      let userid = [];
+      return userid
     }
   }
 
-  function Loginset (username, password) {
-    setUserDetails(username, password);
+  function Loginset (username) {
+    setUserDetails(username);
+    return;
+  }
+
+  function postset (postid) {
+    setPostId(postid);
     return;
   }
 
@@ -42,7 +52,7 @@ function App() {
     return (
       <HashRouter basename='/'>
         <div className='App'>
-          <Navbar data={userDetails} onLogOut={LogOutset}/>
+          <Navbar onLogOut={LogOutset}/>
           <Routes>
             <Route path="/" element={<Home data={userDetails} />} />
             <Route path="/login" element={<Login data={userDetails} onLogIn={Loginset}/>} />
@@ -50,11 +60,10 @@ function App() {
             <Route path="/user" element={<User data={userDetails} onLoad={CheckUserId}/>} />
             <Route path="/create" element={<Create onLoad={CheckUserId}/>} />
             <Route path="/post" element={<Post />}>
-              <Route path=":postid" element={<PostPage data={userDetails} onComment={CheckUserId}/>}>
-                <Route path="edit" element={<PostEdit onLoad={CheckUserId}/>} />
-                <Route path=":commentid" element={<CommentEdit onLoad={CheckUserId}/>} />
-              </Route>
+              <Route path=":postid" element={<PostPage data={userDetails} onComment={CheckUserId} onCommUpd={postset}/>}/>
             </Route>
+            <Route path="edit/:postid" element={<PostEdit onLoad={CheckUserId}/>} />
+            <Route path="/comment/:commentid" element={<CommentEdit data={postId} onLoad={CheckUserId}/>} />
           </Routes>
         </div>
       </HashRouter>
