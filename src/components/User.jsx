@@ -6,15 +6,14 @@ function User (props) {
     const getUserId = props.onLoad;
 
     const [posts, setPosts] = useState([]);
-    const [userId, setUserId] = useState([]);
+    const [userId, setUserId] = useState(() => getUserId());
     const [error, setError] = useState([]);
 
 
     const postsGet = () => {
-        let user = getUserId();
-        setUserId(user);
 
-        let url = `https://blogapi-production-8080.up.railway.app/posts/${userId}`;
+        let url = `https://blogapi-production-8080.up.railway.app/posts/user/${userId}`;
+        console.log(url);
         fetch(url)
         .then((response) => {
             return response.json()
