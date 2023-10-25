@@ -4,16 +4,16 @@
 
 This is the code base for the front end component of a full stack blogging website. Features include:
 
-* Signing up as a user
-* Logging in
-* Logging out
-* Viewing user profile
-* Creating, updating, and deleting posts
-* Creating, updating, and deleting comments
-* Viewing all posts 
+* Signing up as a user.
+* Logging in.
+* Logging out.
+* Viewing user profile.
+* Creating, updating, and deleting posts.
+* Creating, updating, and deleting comments.
+* Viewing all posts.
 
 This application uses the build tool Vite and the the Javascript library React due to their ease of use, speed, and wide applicability. 
-It sends fetch requests to a backend API I built that can be found <a href="https://github.com/mulcharv/blogapi">here</a>
+It sends fetch requests to a backend API I built that can be found <a href="https://github.com/mulcharv/blogapi">here</a>.
 For a live demonstration of the above features, please click the link in the reponsitory's about section. 
 
 ## Key Learning 
